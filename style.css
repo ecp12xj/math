@@ -1,0 +1,262 @@
+/* --- Global Styles & Fonts --- */
+body {
+    font-family: 'Nunito', 'Noto Sans SC', sans-serif;
+    margin: 0;
+    background-color: #f0f8ff; /* Light Alice Blue background */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to top to see header first */
+    min-height: 100vh;
+    padding-top: 20px; /* Space from top */
+}
+
+#app {
+    max-width: 800px;
+    width: 95%;
+    background: linear-gradient(135deg, #ffffff 0%, #e6f7ff 100%); /* White to light blue gradient */
+    padding: 20px;
+    border-radius: 15px; /* More rounded corners */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Softer, deeper shadow */
+    border: 1px solid #b3e0ff; /* Light blue border */
+}
+
+/* --- Typography & General Elements --- */
+h1, h2 {
+    font-family: 'Noto Sans SC', 'Nunito', sans-serif; /* Prioritize Chinese font for headings */
+    color: #0077cc; /* Cheerful blue */
+    text-align: center;
+}
+
+.app-header h1 {
+    font-size: 2.8em; /* Larger main title */
+    margin-bottom: 15px;
+    color: #ff6347; /* Tomato color for main title */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.mode-title {
+    font-size: 2em; /* Slightly smaller for mode titles */
+    margin-bottom: 20px;
+    color: #33aacc; /* Bright teal */
+}
+
+.question-text {
+    font-size: 1.6em; /* Larger question text */
+    color: #555;
+    margin-bottom: 15px;
+    min-height: 40px;
+}
+
+.answer-input {
+    padding: 12px 18px;
+    border: 2px solid #add8e6; /* Light blue border */
+    border-radius: 8px;
+    font-size: 1.2em;
+    width: calc(60% - 40px); /* Adjust width considering padding and border */
+    margin-right: 10px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.answer-input:focus {
+    border-color: #0077cc;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0,119,204,0.3);
+}
+
+/* --- Buttons --- */
+.mode-selection {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.mode-button, .submit-button {
+    background-color: #ff9800; /* Vibrant orange */
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 10px; /* More rounded buttons */
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.mode-button:hover, .submit-button:hover {
+    background-color: #f57c00; /* Darker orange on hover */
+    transform: translateY(-2px); /* Slight lift */
+}
+
+.mode-button:active, .submit-button:active {
+    background-color: #e65100; /* Even darker on active */
+    transform: translateY(1px);
+}
+
+.submit-button {
+    background-color: #4CAF50; /* Green for submit */
+    min-width: 100px;
+}
+.submit-button:hover { background-color: #388E3C; }
+.submit-button:active { background-color: #1B5E20; }
+
+
+/* --- Feedback & Messages --- */
+.feedback-message {
+    font-size: 1.2em;
+    font-weight: bold;
+    min-height: 25px;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.feedback-message[style*="color: green"] { /* When correct */
+    background-color: #e8f5e9; /* Light green background */
+}
+.feedback-message[style*="color: red"] { /* When incorrect */
+    background-color: #ffebee; /* Light red background */
+}
+
+.explanation-area {
+    font-size: 1.1em;
+    color: #444; /* Darker grey for better readability */
+    margin-top: 10px;
+    padding: 12px;
+    background-color: #eef7ff; /* Very light blue background */
+    border-radius: 8px;
+    border: 1px dashed #90c5f0; /* Dashed light blue border */
+    line-height: 1.6;
+}
+
+.end-game-message {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #0077cc;
+    margin-top: 20px;
+}
+
+/* --- Learning Mode Specific --- */
+.score-display {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ffbf00; /* Gold color for coins */
+    text-align: center;
+    margin: 15px 0;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+
+.poster-container img {
+    border: 5px solid #ffbf00; /* Gold border for poster */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25); /* Enhanced shadow */
+}
+
+/* --- Practice Mode Specific --- */
+.image-container {
+    border-radius: 8px; /* Ensure container clips overflow if children have border-radius */
+    overflow: hidden; /* Important for grid blocks with border-radius */
+}
+
+.practice-grid-block {
+    background-color: rgba(25, 118, 210, 0.8); /* Blue, slightly more vibrant and opaque */
+    border: 1px solid #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, opacity 0.3s, visibility 0.3s;
+    /* border-radius: 3px; */ /* Optional: if grid itself is rounded */
+}
+
+.practice-grid-block:hover {
+    background-color: rgba(13, 71, 161, 0.9); /* Darker blue on hover */
+}
+
+/* Animation for when a block is correctly answered (from previous subtask, ensure it's good) */
+.block-correct-animation {
+    animation: blockCorrect 0.7s ease-out forwards;
+}
+
+@keyframes blockCorrect {
+    0% { background-color: rgba(25, 118, 210, 0.8); opacity: 1; }
+    50% { background-color: #ffd700; transform: scale(1.1); opacity: 0.8; } /* Gold flash */
+    100% { background-color: transparent; opacity: 0; visibility: hidden; }
+}
+
+#fullImageFireworksOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: none;
+    overflow: hidden;
+}
+
+#fullImageFireworksOverlay::before,
+#fullImageFireworksOverlay::after,
+.firework-particle { /* Ensure .firework-particle is styled if used by JS */
+    content: "🎉";
+    position: absolute;
+    font-size: 50px;
+    opacity: 0;
+    animation: singleFirework 1.5s ease-out forwards;
+}
+
+#fullImageFireworksOverlay::before { content: "🎊"; top: 20%; left: 30%; animation-delay: 0.2s; }
+#fullImageFireworksOverlay::after { content: "✨"; bottom: 20%; right: 30%; animation-delay: 0.4s; }
+/* Example for JS added particle: */
+/* .firework-particle { top: 50%; left: 50%; animation-delay: 0.6s; } */
+
+
+@keyframes singleFirework {
+    0% { transform: scale(0.5) translateY(50px) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1.2) translateY(-20px) rotate(180deg); opacity: 1; }
+    100% { transform: scale(0.8) translateY(-80px) rotate(360deg); opacity: 0; }
+}
+
+/* --- Layout & Structure --- */
+.mode-content {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fdfdfd; /* Slightly off-white for content areas */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.question-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Space between elements in question area */
+    margin-bottom: 20px;
+}
+
+/* --- Footer --- */
+footer {
+    text-align: center;
+    padding: 15px;
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #777;
+}
+
+.footer-text {
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Responsive adjustments if necessary */
+@media (max-width: 600px) {
+    .app-header h1 { font-size: 2.2em; }
+    .mode-title { font-size: 1.8em; }
+    .question-text { font-size: 1.3em; }
+    .answer-input { width: calc(100% - 36px); margin-right: 0; } /* Full width on small screens */
+    .mode-button, .submit-button { padding: 12px 20px; font-size: 1em; }
+    .mode-selection { flex-direction: column; gap: 10px; }
+    #practiceImageContainer { width: 90%; height: auto; aspect-ratio: 300 / 240; } /* Maintain aspect ratio */
+}

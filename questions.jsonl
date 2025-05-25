@@ -1,0 +1,12 @@
+{"question": "1 + 1 =", "answer": 2, "explanation": "1加1等于2"}
+{"question": "5 x 5 =", "answer": 25, "explanation": "5乘以5等于25"}
+{"question": "10 / 2 =", "answer": 5, "explanation": "10除以2等于5"}
+{"question": "3 x 4 =", "answer": 12, "explanation": "3个4相加等于12"}
+{"question": "15 - 7 =", "answer": 8, "explanation": "从15中拿走7剩下8"}
+{"question": "100 + 100 =", "answer": 200}
+{"question": "27 / 3 =", "answer": 9}
+{"question": "20 ÷ 4 =", "answer": 5, "explanation": "20里面有5个4"}
+{"question": "50 - 23 =", "answer": 27, "explanation": "50减去20等于30，再减去3等于27"}
+{"question": "7 x 8 =", "answer": 56, "explanation": "7个8相乘等于56"}
+{"question": "100 ÷ 10 =", "answer": 10, "explanation": "100里面有10个10"}
+{"question": "35 + 18 =", "answer": 53, "explanation": "35加10等于45，再加8等于53"}
