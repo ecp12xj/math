@@ -279,7 +279,7 @@ function checkPracticeAnswer() {
     const explanationElement = document.getElementById('practiceExplanationArea');
     const userAnswer = answerInputElement.value.trim();
 
-    const userAnswer = answerInputElement.value.trim();
+    // Removed duplicate declaration of userAnswer here
 
     if (userAnswer === "" || activeBlockId === null) {
         feedbackElement.textContent = typeof KID_FRIENDLY_CLICK_BLOCK_PROMPT !== 'undefined' ? KID_FRIENDLY_CLICK_BLOCK_PROMPT : "请先点击一个方块并输入答案！";
