@@ -1,3 +1,5 @@
+console.log('script.js started'); // Task: Log script start
+
 let allQuestions = [];
 let currentLearningQuestions = [];
 let currentQuestionIndex = 0;
@@ -67,8 +69,9 @@ async function loadQuestions() {
             questionArea.textContent = typeof KID_FRIENDLY_NO_QUESTIONS_LOADED_ERROR !== 'undefined' ? KID_FRIENDLY_NO_QUESTIONS_LOADED_ERROR : '题目加载失败，请稍后再试。';
         // This part is now integrated into the main catch block of loadQuestions
         // to use the globalMessageArea if available.
-    }
-}
+    } // Closes: if (questionArea && ...)
+} // Closes: catch (error)
+} // ADDED: Closes: async function loadQuestions()
 
 function displayLearningQuestion(question) {
     const questionTextElement = document.getElementById('learningQuestionText');
@@ -125,12 +128,14 @@ function updateLearningScoreDisplay() {
     }
 }
 
+console.log('Defining showLearningMode'); // Task: Log function definition
 function showLearningMode() {
     document.getElementById('learningMode').style.display = 'block';
     document.getElementById('practiceMode').style.display = 'none';
     startLearningMode(); 
 }
 
+console.log('Defining showPracticeMode'); // Task: Log function definition
 function showPracticeMode() {
     document.getElementById('learningMode').style.display = 'none';
     document.getElementById('practiceMode').style.display = 'block';
