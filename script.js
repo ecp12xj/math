@@ -11,22 +11,62 @@ const KID_FRIENDLY_PERFECT_SCORE_MESSAGE = "🥳 哇！全部答对，你太厉�
 const KID_FRIENDLY_TRY_AGAIN_MESSAGE = "😊 继续加油！争取得到完美海报！";
 const KID_FRIENDLY_POSTER_FULL_CONTENT_MESSAGE = "🎁 这是你的专属海报，要好好保存哦！";
 // Other messages will be updated if this targeted approach works.
+// For global error message:
+const GLOBAL_LOAD_ERROR_MESSAGE = '错误：无法加载题目文件 (questions.jsonl)。请确保文件存在并且格式正确。';
+
 
 async function loadQuestions() {
+    console.log('Attempting to load questions.jsonl...');
+    const globalMessageArea = document.getElementById('globalMessageArea');
     try {
+        console.log('Fetching questions.jsonl...'); // Verified: filename is 'questions.jsonl'
         const response = await fetch('questions.jsonl');
+        console.log('Fetch response:', response.ok, response.status, response.statusText);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
         }
-        const text = await response.text();
-        allQuestions = text.trim().split('\n').map(line => JSON.parse(line));
+        const responseText = await response.text();
+        console.log('Response text received (first 100 chars):', responseText.substring(0, 100));
+        
+        const lines = responseText.trim().split('\n');
+        console.log('Split into lines (count):', lines.length);
+
+        if (responseText.trim() === "") { // Handle completely empty or whitespace-only file
+            console.warn("questions.jsonl is empty or contains only whitespace.");
+            allQuestions = [];
+        } else {
+            allQuestions = lines.map((line, index) => {
+                console.log(`Attempting to parse line ${index + 1}:`, line);
+                try {
+                    if (line.trim() === "") return null; // Skip empty lines if any
+                    return JSON.parse(line);
+                } catch (e) {
+                    console.error('Error parsing line:', line, e);
+                    // Optionally, could throw e to make loadQuestions fail entirely on one bad line,
+                    // or return null / skip to allow partial loading. Current behavior: returns null.
+                    return null; 
+                }
+            }).filter(q => q !== null); // Filter out lines that failed to parse or were empty
+        }
+        
+        console.log("Successfully loaded and parsed questions. Count:", allQuestions.length);
+        if (globalMessageArea) globalMessageArea.textContent = ''; // Clear global error message on success
+        
     } catch (error) {
-        console.error("无法加载题目:", error);
-        // Display error to user in Chinese
-        const questionArea = document.getElementById('learningQuestionText');
-        if (questionArea) {
-            questionArea.textContent = '题目加载失败，请稍后再试。';
+        console.error('Critical error loading questions:', error);
+        allQuestions = [];
+        practiceQuestions = []; // Ensure this is also cleared
+        
+        if (globalMessageArea) {
+            globalMessageArea.textContent = GLOBAL_LOAD_ERROR_MESSAGE;
         }
+        // Fallback to older error display if global one isn't there for some reason
+        const questionArea = document.getElementById('learningQuestionText') || document.getElementById('practiceQuestionText');
+        if (questionArea && (!globalMessageArea || globalMessageArea.textContent === '')) {
+             // Using KID_FRIENDLY_NO_QUESTIONS_LOADED_ERROR if defined, otherwise the old one
+            questionArea.textContent = typeof KID_FRIENDLY_NO_QUESTIONS_LOADED_ERROR !== 'undefined' ? KID_FRIENDLY_NO_QUESTIONS_LOADED_ERROR : '题目加载失败，请稍后再试。';
+        // This part is now integrated into the main catch block of loadQuestions
+        // to use the globalMessageArea if available.
     }
 }
 
@@ -51,7 +91,9 @@ async function startLearningMode() {
     await loadQuestions();
     // Ensure we have enough questions, or handle gracefully
     if (allQuestions.length === 0) {
-        document.getElementById('learningQuestionText').textContent = '没有题目可供学习。';
+        const element = document.getElementById('learningQuestionText');
+        // Use KID_FRIENDLY_NO_QUESTIONS_AVAILABLE if defined, otherwise the old one
+        if(element) element.textContent = typeof KID_FRIENDLY_NO_QUESTIONS_AVAILABLE !== 'undefined' ? KID_FRIENDLY_NO_QUESTIONS_AVAILABLE : '沒有题目可供学习。';
         return;
     }
     currentLearningQuestions = allQuestions.slice(0, Math.min(10, allQuestions.length));
@@ -170,8 +212,9 @@ async function handleBlockClick(blockId) {
         practiceQuestions = [...allQuestions].sort(() => 0.5 - Math.random());
     }
 
-    if (practiceQuestions.length === 0) {
-        document.getElementById('practiceQuestionText').textContent = '没有可用的练习题目。';
+    if (practiceQuestions.length === 0) { // This check might be redundant if startPracticeMode always populates it or loadQuestions handles it
+        const element = document.getElementById('practiceQuestionText');
+        if(element) element.textContent = typeof KID_FRIENDLY_NO_QUESTIONS_AVAILABLE !== 'undefined' ? KID_FRIENDLY_NO_QUESTIONS_AVAILABLE : '沒有可用的练习题目。';
         return;
     }
 
@@ -236,8 +279,10 @@ function checkPracticeAnswer() {
     const explanationElement = document.getElementById('practiceExplanationArea');
     const userAnswer = answerInputElement.value.trim();
 
+    const userAnswer = answerInputElement.value.trim();
+
     if (userAnswer === "" || activeBlockId === null) {
-        feedbackElement.textContent = "请先点击一个方块并输入答案！";
+        feedbackElement.textContent = typeof KID_FRIENDLY_CLICK_BLOCK_PROMPT !== 'undefined' ? KID_FRIENDLY_CLICK_BLOCK_PROMPT : "请先点击一个方块并输入答案！";
         explanationElement.innerHTML = '';
         return;
     }
@@ -246,56 +291,47 @@ function checkPracticeAnswer() {
     const blockElement = document.querySelector(`.practice-grid-block[data-block-id="${activeBlockId}"]`);
 
     if (userAnswer == currentQuestion.answer) {
-        feedbackElement.textContent = "正确！";
+        feedbackElement.textContent = typeof KID_FRIENDLY_BLOCK_REVEALED_MESSAGE !== 'undefined' ? KID_FRIENDLY_BLOCK_REVEALED_MESSAGE : "正确！";
         feedbackElement.style.color = 'green';
-        explanationElement.innerHTML = ''; // Clear any previous explanation
-        answerInputElement.disabled = true; // Disable input after correct answer
-        document.getElementById('submitPracticeAnswer').disabled = true; // Disable button
+        explanationElement.innerHTML = ''; 
+        answerInputElement.disabled = true; 
+        document.getElementById('submitPracticeAnswer').disabled = true; 
 
         if (blockElement) {
             blockElement.classList.add('block-correct-animation');
-            // The animation itself will make it visibility: hidden at the end.
-            // Listen for animation end to truly count it as revealed for game logic,
-            // or set a timeout if preferred for simplicity.
-            // For now, we'll assume animation duration is short and count immediately.
         }
         revealedBlocks++;
         
-        // Hide question area after a short delay to allow user to see "Correct!"
         setTimeout(() => {
             document.getElementById('practiceQuestionArea').style.display = 'none';
         }, 1000);
 
 
         if (revealedBlocks === TOTAL_BLOCKS) {
-            feedbackElement.textContent = "恭喜你完成了所有题目！"; // Should be shown in a more prominent place
-            explanationElement.innerHTML = '';
-            document.getElementById('practiceImageGrid').style.display = 'none'; // Hide grid
+            const practiceEndMessage = document.getElementById('practiceFeedback'); 
+            if(practiceEndMessage) practiceEndMessage.textContent = typeof KID_FRIENDLY_ALL_BLOCKS_REVEALED_MESSAGE !== 'undefined' ? KID_FRIENDLY_ALL_BLOCKS_REVEALED_MESSAGE : "恭喜你完成了所有题目！";
+            
+            document.getElementById('practiceImageGrid').style.display = 'none'; 
             
             const fireworksOverlay = document.getElementById('fullImageFireworksOverlay');
             if (fireworksOverlay) {
                 fireworksOverlay.style.display = 'block';
-                // If using JS-driven particles for fullImageFireworksOverlay, trigger them here
-                // For CSS only, the animation starts when display is set to block.
-                // Ensure it resets if mode is re-entered.
-                setTimeout(() => { // Hide fireworks after some time
+                setTimeout(() => { 
                     if (fireworksOverlay) fireworksOverlay.style.display = 'none';
-                }, 3000); // Match or exceed CSS animation duration
+                }, 3000); 
             }
         }
     } else {
-        feedbackElement.textContent = "😢 不正确";
+        feedbackElement.textContent = typeof KID_FRIENDLY_TRY_AGAIN_PRACTICE_MESSAGE !== 'undefined' ? KID_FRIENDLY_TRY_AGAIN_PRACTICE_MESSAGE : "😢 不正确";
         feedbackElement.style.color = 'red';
-        let explanationText = `正确答案是：${currentQuestion.answer}。`;
+        let explanationText = `${typeof KID_FRIENDLY_EXPLANATION_PREFIX !== 'undefined' ? KID_FRIENDLY_EXPLANATION_PREFIX : "正确答案是："}<strong style="color: #0077cc;">${currentQuestion.answer}</strong>。`;
         if (currentQuestion.explanation) {
-            explanationText += `解释：${currentQuestion.explanation}`;
+            explanationText += `<br>${typeof KID_FRIENDLY_EXPLANATION_DETAIL_PREFIX !== 'undefined' ? KID_FRIENDLY_EXPLANATION_DETAIL_PREFIX : "解释："}${currentQuestion.explanation}`;
         }
         explanationElement.innerHTML = explanationText;
-        answerInputElement.focus(); // Let user try again
-        answerInputElement.select(); // Select current text for easy replacement
+        answerInputElement.focus(); 
+        answerInputElement.select(); 
     }
-    // Do not clear input for incorrect answer, allow retry.
-    // answerInputElement.value = ''; 
 }
 
 
@@ -308,7 +344,7 @@ function checkLearningAnswer() {
     const userAnswer = answerInputElement.value.trim();
 
     if (userAnswer === "") {
-        feedbackElement.textContent = "请输入答案！"; // Please enter an answer!
+        feedbackElement.textContent = typeof KID_FRIENDLY_ENTER_ANSWER_PROMPT !== 'undefined' ? KID_FRIENDLY_ENTER_ANSWER_PROMPT : "请输入答案！"; 
         return;
     }
 
